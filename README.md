@@ -1,0 +1,479 @@
+# Shawrma-City
+# Restaurant ERP Pro
+
+Enterprise ERP & POS System for Restaurants
+
+Version: 0.1.0
+
+---
+
+## Project Status (read this first)
+
+This README describes the **full target vision** for the system. Most of it
+is **not built yet** — building an ERP this size is a multi-milestone effort.
+
+**Done (Milestone 1 — Foundation):**
+- Backend boots with FastAPI + SQLAlchemy (sync) + PostgreSQL
+- Data model for all 13 domains below (Core, Inventory, Purchasing, Sales,
+  Recipes, Accounting) — 34 tables, one Alembic migration
+- JWT auth (login / refresh), password hashing
+- Full CRUD: Users, Companies, Branches, Roles & Permissions
+- Basic dashboard summary endpoint
+- `scripts/seed_superuser.py` to bootstrap the first company/branch/superuser
+- Docker Compose for postgres + redis + backend + pgadmin
+
+**Done (Frontend milestone):**
+- React + TypeScript + Vite app under `frontend/`, Arabic/RTL by default
+- Login (JWT, auto-refresh on 401), protected routing
+- Dashboard reading the real `/dashboard/summary` endpoint
+- Full CRUD screens for Companies, Branches, Users — wired to the real
+  backend API, matching its actual contracts (e.g. branches can't change
+  company after creation, because the backend doesn't allow it either)
+- **Note**: built with zustand + plain CSS instead of the Redux Toolkit /
+  Material UI originally planned below — lighter weight for this stage.
+  The "Frontend" tech list further down still describes the original plan;
+  treat this note as the source of truth until that section is rewritten.
+
+**Done (Milestone 2 — Inventory & Purchasing):**
+- Backend: full CRUD for Warehouses, Product Categories, Products, Suppliers
+- Backend: Purchase Orders with line items, status flow (DRAFT → APPROVED →
+  RECEIVED / CANCELLED), order-number generation
+- Backend: Goods Receipt against an approved PO — posts real
+  `InventoryStockMovement` rows and updates `InventoryBalance` using
+  weighted-average costing (`app/integrations/inventory_auto_engine.py`,
+  fixed during this milestone — it previously didn't maintain
+  `available_quantity` and had a couple of inconsistencies)
+- Backend: manual stock adjustment endpoint (`POST /inventory/adjustments`)
+  for corrections/waste outside the PO flow
+- Migration added: `purchase_receipts.warehouse_id` — this was missing
+  from the Milestone 1 schema and is required to know which warehouse
+  received goods
+- Frontend: CRUD screens for Warehouses, Categories, Products, Suppliers
+- Frontend: Purchase Order screen with a dynamic line-item builder
+  (add/remove rows, live subtotal/total), approve/cancel actions
+- Frontend: Goods Receipt modal — pick a warehouse, enter received
+  quantities per remaining line, submits to the real posting endpoint
+- Not built: receiving partial/backordered reporting, supplier payments,
+  PO printing/PDF export
+
+**Known gaps / honest caveats:**
+- `PASSWORD_MIN_LENGTH` exists in backend config but isn't actually enforced
+  in `UserCreate` validation — only the frontend checks it client-side
+- The UI doesn't hide create/edit/delete actions from non-superusers; it
+  relies on the backend's 403 + a toast message instead of a permissions-aware UI
+- No automated frontend tests yet (no Vitest/Playwright setup)
+- No multi-tenant boundary checks on purchase orders (a superuser could pick
+  a branch/supplier from a different company than intended — nothing stops
+  it server-side; same gap existed for some Milestone 1 endpoints)
+- The PO order-number generator (`PO-YYYYMMDD-NNNN`) has a small race window
+  under concurrent writes; the column's UNIQUE constraint turns a collision
+  into a loud failure rather than silent data corruption, but it can fail
+  under real concurrent load
+
+**Not built yet:**
+- Sales/POS, Recipes, Accounting business endpoints (models exist, CRUD doesn't)
+- Automation engines wiring sales → inventory → accounting (stub code exists in `app/integrations/`, not connected to any endpoint)
+- HR, CRM, Finance modules (not modeled or coded at all)
+- Reports, POS hardware integration (barcode/printing), Celery workers
+
+See the milestone plan in this conversation, or ask for an updated status —
+this section should be kept current as each milestone lands.
+
+---
+
+## Overview
+
+Restaurant ERP Pro is a complete Enterprise Resource Planning (ERP) and Point of Sale (POS) platform designed for restaurants, cafés, food courts, cloud kitchens and restaurant chains.
+
+The system includes:
+
+- POS
+- Inventory
+- Purchasing
+- Recipe Management
+- Food Cost
+- Accounting
+- Finance
+- HR
+- CRM
+- Dashboard
+- Reports
+
+---
+
+# Technology Stack
+
+## Backend
+
+- Python 3.13
+- FastAPI
+- SQLAlchemy 2.x
+- Alembic
+- Pydantic
+- PostgreSQL
+- Redis
+- Celery
+
+## Frontend
+
+- React
+- TypeScript
+- Vite
+- Material UI
+- Redux Toolkit
+- React Query
+
+## Database
+
+PostgreSQL 17
+
+---
+
+# Features
+
+## Core
+
+- Multi Company
+- Multi Branch
+- Multi Warehouse
+- Multi User
+- Multi Currency
+- Multi Language
+
+---
+
+## Security
+
+- JWT Authentication
+- Refresh Token
+- RBAC Permissions
+- Audit Log
+- Password Policies
+- Session Management
+
+---
+
+## POS
+
+- Sales
+- Returns
+- Discounts
+- Coupons
+- Kitchen Orders
+- Barcode
+- QR Code
+- Thermal Printing
+
+---
+
+## Inventory
+
+- Raw Materials
+- Finished Products
+- Transfers
+- Stock Count
+- Stock Adjustment
+- Waste Management
+- Expiry Tracking
+
+---
+
+## Purchasing
+
+- Suppliers
+- Purchase Orders
+- Goods Receipt
+- Purchase Invoice
+- Purchase Return
+
+---
+
+## Recipes
+
+- Recipes
+- Recipe Cost
+- Yield
+- Waste
+- Versioning
+
+---
+
+## Accounting
+
+- Chart Of Accounts
+- Journal Entries
+- General Ledger
+- Trial Balance
+- Income Statement
+- Balance Sheet
+- Cash Flow
+
+---
+
+## Finance
+
+- Cashboxes
+- Banks
+- Expenses
+- Receipts
+- Payments
+
+---
+
+## HR
+
+- Employees
+- Attendance
+- Payroll
+- Loans
+- Bonuses
+- Vacations
+
+---
+
+## CRM
+
+- Customers
+- Loyalty
+- Coupons
+- Feedback
+
+---
+
+# Project Structure
+
+Restaurant-ERP-Pro/
+
+backend/
+
+frontend/
+
+database/
+
+deployment/
+
+docs/
+
+tests/
+
+scripts/
+
+---
+
+# Backend Structure
+
+backend/
+
+app/
+
+api/
+
+core/
+
+models/
+
+schemas/
+
+repositories/
+
+services/
+
+security/
+
+middleware/
+
+events/
+
+workers/
+
+tests/
+
+---
+
+# Frontend Structure
+
+frontend/
+
+src/
+
+components/
+
+layouts/
+
+pages/
+
+hooks/
+
+services/
+
+store/
+
+theme/
+
+types/
+
+---
+
+# Database Structure
+
+database/
+
+schema/
+
+migrations/
+
+functions/
+
+views/
+
+triggers/
+
+seed/
+
+indexes/
+
+---
+
+# Architecture
+
+- Clean Architecture
+- Repository Pattern
+- Unit Of Work
+- SOLID Principles
+- Dependency Injection
+- Event Driven
+- REST API
+- Domain Driven Design
+
+---
+
+# Accounting Rules
+
+- Double Entry Accounting
+- Automatic Journal Posting
+- VAT Included Prices
+- Weighted Average Cost
+- Recipe Based Consumption
+
+---
+
+# Default Modules
+
+1. Core
+2. Security
+3. Products
+4. Recipes
+5. Inventory
+6. Purchasing
+7. Sales
+8. POS
+9. Accounting
+10. Finance
+11. HR
+12. CRM
+13. Reports
+
+---
+
+# Development
+
+```bash
+git clone https://github.com/your-company/restaurant-erp-pro.git
+cd restaurant-erp-pro
+```
+
+Copy the environment template and adjust if needed:
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+Start postgres, redis, pgadmin, and the backend:
+
+```bash
+docker compose up -d postgres redis backend pgadmin
+```
+
+Run database migrations (first time, and after pulling any future migration):
+
+```bash
+docker compose exec backend alembic upgrade head
+```
+
+Create your first company, branch, and superuser (interactive prompt —
+there is no other way to get the first account, since every "create"
+endpoint requires being logged in already):
+
+```bash
+docker compose exec backend python -m scripts.seed_superuser
+```
+
+Backend API
+
+```
+http://localhost:8000
+```
+
+Swagger / interactive docs
+
+```
+http://localhost:8000/docs
+```
+
+pgAdmin (DB browser)
+
+```
+http://localhost:5050
+```
+
+The `frontend` service in `docker-compose.yml` is now active and builds the
+real React app under `frontend/`.
+
+## Running the frontend
+
+Via docker-compose (proxies to the backend container automatically):
+
+```bash
+docker compose up -d frontend
+```
+
+```
+http://localhost:5173
+```
+
+Or directly on your host (faster hot reload, needs Node 20+):
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+This proxies `/api/*` to `http://localhost:8000` by default — make sure the
+backend is running first. Log in with the superuser created by
+`scripts/seed_superuser.py` above.
+
+## Running tests
+
+Every model uses Postgres-specific column types (`UUID`, `JSONB`), so the
+test suite needs a real Postgres database — SQLite cannot represent this
+schema at all. Easiest way, using the same Postgres container as dev:
+
+```bash
+docker compose exec postgres createdb -U postgres restaurant_erp_test
+docker compose exec backend pytest
+```
+
+Or point `TEST_DATABASE_URL` at any throwaway Postgres database. Tests
+create and drop every table per test, so never point it at a database with
+real data.
+
+---
+
+# License
+
+Commercial License
+
+Restaurant ERP Pro
+
+© 2026 All Rights Reserved
