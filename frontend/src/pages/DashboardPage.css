@@ -1,0 +1,79 @@
+.dashboard-intro {
+  color: var(--color-ink-soft);
+  margin: 0 0 var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+@media (max-width: 1100px) {
+  .metric-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metric-card {
+  background: var(--color-paper-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.metric-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.metric-card--saffron .metric-card__icon {
+  background: var(--color-saffron-soft);
+  color: var(--color-saffron-dark);
+}
+.metric-card--olive .metric-card__icon {
+  background: var(--color-olive-soft);
+  color: var(--color-olive);
+}
+.metric-card--sky .metric-card__icon {
+  background: var(--color-sky-soft);
+  color: var(--color-sky);
+}
+.metric-card--brick .metric-card__icon {
+  background: var(--color-brick-soft);
+  color: var(--color-brick);
+}
+
+.metric-card__value {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.metric-card__label {
+  font-size: var(--text-sm);
+  color: var(--color-ink-soft);
+  margin: 2px 0 0;
+}
+
+.dashboard-note {
+  background: var(--color-paper);
+}

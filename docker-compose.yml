@@ -69,29 +69,28 @@ services:
 
       - ./backend:/workspace
 
-  # frontend service will be enabled in a later milestone once
-  # the React app exists under ./frontend
-  # frontend:
-  #
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #
-  #   container_name: restaurant_frontend
-  #
-  #   restart: unless-stopped
-  #
-  #   depends_on:
-  #     - backend
-  #
-  #   ports:
-  #     - "5173:5173"
-  #
-  #   volumes:
-  #     - ./frontend:/app
-  #
-  #   environment:
-  #     VITE_API_URL: http://localhost:8000/api/v1
+  frontend:
+
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    container_name: restaurant_frontend
+
+    restart: unless-stopped
+
+    depends_on:
+      - backend
+
+    ports:
+      - "5173:5173"
+
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8000
 
   pgadmin:
 

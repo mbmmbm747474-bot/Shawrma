@@ -22,8 +22,28 @@ is **not built yet** — building an ERP this size is a multi-milestone effort.
 - `scripts/seed_superuser.py` to bootstrap the first company/branch/superuser
 - Docker Compose for postgres + redis + backend + pgadmin
 
+**Done (Frontend milestone):**
+- React + TypeScript + Vite app under `frontend/`, Arabic/RTL by default
+- Login (JWT, auto-refresh on 401), protected routing
+- Dashboard reading the real `/dashboard/summary` endpoint
+- Full CRUD screens for Companies, Branches, Users — wired to the real
+  backend API, matching its actual contracts (e.g. branches can't change
+  company after creation, because the backend doesn't allow it either)
+- **Note**: built with zustand + plain CSS instead of the Redux Toolkit /
+  Material UI originally planned below — lighter weight for this stage.
+  The "Frontend" tech list further down still describes the original plan;
+  treat this note as the source of truth until that section is rewritten.
+- Not built: every screen for Inventory/Purchasing/Sales/Recipes/Accounting,
+  since those backend endpoints don't exist yet either (see below)
+
+**Known gaps / honest caveats:**
+- `PASSWORD_MIN_LENGTH` exists in backend config but isn't actually enforced
+  in `UserCreate` validation — only the frontend checks it client-side
+- The UI doesn't hide create/edit/delete actions from non-superusers; it
+  relies on the backend's 403 + a toast message instead of a permissions-aware UI
+- No automated frontend tests yet (no Vitest/Playwright setup)
+
 **Not built yet:**
-- Frontend (no `frontend/` folder exists; the React stack below is the plan, not reality)
 - Inventory/Purchasing/Sales/Recipes/Accounting business endpoints (models exist, CRUD doesn't)
 - Automation engines wiring sales → inventory → accounting (stub code exists in `app/integrations/`, not connected to any endpoint)
 - HR, CRM, Finance modules (not modeled or coded at all)
@@ -379,8 +399,32 @@ pgAdmin (DB browser)
 http://localhost:5050
 ```
 
-The `frontend` service in `docker-compose.yml` is commented out — there is no
-`frontend/` app yet. It will be re-enabled once that milestone lands.
+The `frontend` service in `docker-compose.yml` is now active and builds the
+real React app under `frontend/`.
+
+## Running the frontend
+
+Via docker-compose (proxies to the backend container automatically):
+
+```bash
+docker compose up -d frontend
+```
+
+```
+http://localhost:5173
+```
+
+Or directly on your host (faster hot reload, needs Node 20+):
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+This proxies `/api/*` to `http://localhost:8000` by default — make sure the
+backend is running first. Log in with the superuser created by
+`scripts/seed_superuser.py` above.
 
 ## Running tests
 
