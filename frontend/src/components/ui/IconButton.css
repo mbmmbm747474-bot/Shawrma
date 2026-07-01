@@ -1,0 +1,24 @@
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-paper-raised);
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.icon-btn:hover {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.icon-btn--danger:hover {
+  background: var(--color-brick-soft);
+  color: var(--color-brick);
+  border-color: var(--color-brick-soft);
+}
