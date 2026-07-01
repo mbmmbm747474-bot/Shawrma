@@ -1,0 +1,43 @@
+{
+  "name": "shawrma-city-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shawrma City - desktop demo build (Electron + bundled FastAPI backend, SQLite database)",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.shawrmacity.desktop",
+    "productName": "Shawrma City",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "src/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "backend-dist",
+        "to": "backend"
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.business"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
